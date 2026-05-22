@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Food Stock Tracker</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f9; }
+        .low-stock { color: red; font-weight: bold; background-color: #ffcccc; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        .input-group { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>🍎 Food Stock Tracker</h2>
+
+    <div class="input-group">
+        <input type="text" id="itemName" placeholder="Item Name">
+        <input type="number" id="itemQty" placeholder="Quantity">
+        <input type="number" id="itemThreshold" placeholder="Alert Level">
+        <button onclick="addItem()">Add/Update Stock</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Threshold</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="stockTableBody">
+            </tbody>
+    </table>
+
+    <script>
+        // This array mimics the List<StockEntry> in Java
+        let inventory = [];
+
+        function addItem() {
+            const name = document.getElementById('itemName').value;
+            const qty = parseInt(document.getElementById('itemQty').value);
+            const threshold = parseInt(document.getElementById('itemThreshold').value);
+
+            if (!name || isNaN(qty)) return;
+
+            // Check if item exists, update it; otherwise, add new
+            const existingItem = inventory.find(i => i.name === name);
+            if (existingItem) {
+                existingItem.qty = qty;
+            } else {
+                inventory.push({ name, qty, threshold });
+            }
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('stockTableBody');
+            tbody.innerHTML = '';
+
+            inventory.forEach(item => {
+                const isLow = item.qty <= item.threshold;
+                const row = `
+                    <tr class="${isLow ? 'low-stock' : ''}">
+                        <td>${item.name}</td>
+                        <td>${item.qty}</td>
+                        <td>${item.threshold}</td>
+                        <td>${isLow ? '⚠️ LOW STOCK' : '✅ OK'}</td>
+                    </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+    </script>
+</body>
+</html>
